@@ -1,8 +1,8 @@
 # @settingdust/pi-subagents
 
-## 上游差异 / Differences from upstream
+## Differences from upstream
 
-本仓库是 [`gotgenes/pi-packages/packages/pi-subagents`](https://github.com/gotgenes/pi-packages/tree/main/packages/pi-subagents) 的独立快照；功能代码当前与上游一致。差异仅限于 npm 包名改为 `@settingdust/pi-subagents`、仓库元数据、公开类型验证脚本中的消费包名及本文档中的安装/导入示例。后续同步路径仍为上游的 `packages/pi-subagents`。
+This repository is a standalone snapshot of [`gotgenes/pi-packages/packages/pi-subagents`](https://github.com/gotgenes/pi-packages/tree/main/packages/pi-subagents), and its functional code currently matches upstream. Differences are limited to the npm package name (`@settingdust/pi-subagents`), repository metadata, the package name used by the public type-validation script, and the installation and import examples in this README. Future updates will continue to sync from upstream's `packages/pi-subagents` path.
 
 [![npm version](https://img.shields.io/npm/v/@settingdust/pi-subagents?style=flat&logo=npm&logoColor=white)](https://www.npmjs.com/package/@settingdust/pi-subagents) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://opensource.org/licenses/MIT) [![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![pnpm](https://img.shields.io/badge/pnpm-%3E%3D11-F69220?style=flat&logo=pnpm&logoColor=white)](https://pnpm.io/) [![Pi Package](https://img.shields.io/badge/Pi-Package-6366F1?style=flat)](https://pi.mariozechner.at/)
 
