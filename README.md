@@ -128,14 +128,30 @@ Define custom agent types by creating `.md` files.
 The filename becomes the agent type name.
 Any name is allowed — using a default agent's name overrides it.
 
-Agents are discovered from two locations (higher priority wins):
+Agents are discovered from three locations (higher priority wins):
 
-| Priority    | Location                                                                         | Scope                         |
-| ----------- | -------------------------------------------------------------------------------- | ----------------------------- |
-| 1 (highest) | `.pi/agents/<name>.md`                                                           | Project — per-repo agents     |
-| 2           | `$PI_CODING_AGENT_DIR/agents/<name>.md` (default `~/.pi/agent/agents/<name>.md`) | Global — available everywhere |
+| Priority    | Location                                                                         | Scope                                  |
+| ----------- | -------------------------------------------------------------------------------- | -------------------------------------- |
+| 1 (highest) | `.pi/agents/<name>.md`                                                           | Project — per-repo agents              |
+| 2           | `$PI_CODING_AGENT_DIR/agents/<name>.md` (default `~/.pi/agent/agents/<name>.md`) | Global — available everywhere          |
+| 3           | Agent directories declared by configured, locally resolved Pi packages          | Package — distributed with the package |
 
-Project-level agents override global ones with the same name, so you can customize a global agent for a specific project.
+Project agents override global agents, which override package agents with the same name.
+Pi's `ResourceLoader` does not expose package agents, so this extension supplements it by reading package sources explicitly listed in global and project `.pi/settings.json` files. It never installs packages, clones repositories, accesses the network, scans arbitrary `node_modules` directories, or queries the global npm root.
+
+Supported package sources are local paths (`./package`, `file:./package`, or absolute paths) and `npm:<name>[@version]` packages already installed in the matching Pi scope's `.pi/npm/node_modules` directory. Git and remote URL sources are ignored.
+Package authors declare directories relative to `package.json` using Pi's standard `pi.agents` manifest field:
+
+```json
+{
+  "pi": {
+    "agents": ["./agents"]
+  }
+}
+```
+
+Each declared directory is scanned non-recursively for the same `<name>.md` format documented below.
+Missing packages/directories are skipped. Malformed manifests and unreadable or invalid agent files warn and skip; one bad package agent does not stop the others. Agent directory entries must be relative package paths without `.` or `..` segments.
 The global location follows the upstream `PI_CODING_AGENT_DIR` env var — set it to relocate all pi-coding-agent state (agents, skills, settings) to a custom directory.
 
 ### Example: `.pi/agents/auditor.md`

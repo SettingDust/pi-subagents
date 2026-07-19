@@ -1,23 +1,23 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BUILTIN_TOOL_NAMES } from "#src/config/agent-types";
 import { loadCustomAgents } from "#src/config/custom-agents";
 
 describe("loadCustomAgents", () => {
   let tmpDir: string;
-  let originalHome: string | undefined;
+  let originalAgentDir: string | undefined;
 
   beforeEach(() => {
     tmpDir = mkdtempSync(join(tmpdir(), "pi-test-"));
-    originalHome = process.env.HOME;
-    process.env.HOME = tmpDir;
+    originalAgentDir = process.env.PI_CODING_AGENT_DIR;
+    process.env.PI_CODING_AGENT_DIR = join(tmpDir, "global");
   });
 
   afterEach(() => {
-    if (originalHome == null) delete process.env.HOME;
-    else process.env.HOME = originalHome;
+    if (originalAgentDir == null) delete process.env.PI_CODING_AGENT_DIR;
+    else process.env.PI_CODING_AGENT_DIR = originalAgentDir;
     rmSync(tmpDir, { recursive: true, force: true });
   });
 
@@ -258,6 +258,75 @@ Agent prompt.`);
 
     const result = loadCustomAgents(tmpDir);
     expect(result.get("myagent")!.displayName).toBe("MyAgent");
+  });
+
+  it("loads agents from explicitly configured local and installed npm packages", () => {
+    const agentHome = mkdtempSync(join(tmpdir(), "pi-agent-home-"));
+    const originalEnv = process.env.PI_CODING_AGENT_DIR;
+    process.env.PI_CODING_AGENT_DIR = agentHome;
+    try {
+      const localRoot = join(tmpDir, ".pi", "local-package");
+      const npmRoot = join(agentHome, "npm", "node_modules", "test-agent-package");
+      for (const [root, name] of [[localRoot, "local"], [npmRoot, "npm"]]) {
+        mkdirSync(join(root, "agents"), { recursive: true });
+        writeFileSync(join(root, "package.json"), JSON.stringify({ pi: { agents: ["./agents"] } }));
+        writeFileSync(join(root, "agents", `${name}.md`), `---\ndescription: ${name}\n---\n\n${name}`);
+      }
+      mkdirSync(join(tmpDir, ".pi"), { recursive: true });
+      mkdirSync(agentHome, { recursive: true });
+      writeFileSync(join(tmpDir, ".pi", "settings.json"), JSON.stringify({ packages: ["./local-package"] }));
+      writeFileSync(join(agentHome, "settings.json"), JSON.stringify({ packages: ["npm:test-agent-package@1.0.0"] }));
+
+      const result = loadCustomAgents(tmpDir);
+      expect(result.get("local")?.source).toBe("package");
+      expect(result.get("npm")?.source).toBe("package");
+    } finally {
+      if (originalEnv == null) delete process.env.PI_CODING_AGENT_DIR;
+      else process.env.PI_CODING_AGENT_DIR = originalEnv;
+      rmSync(agentHome, { recursive: true, force: true });
+    }
+  });
+
+  it("does not scan unconfigured installed packages", () => {
+    const packageRoot = join(tmpDir, ".pi", "npm", "node_modules", "unconfigured");
+    mkdirSync(join(packageRoot, "agents"), { recursive: true });
+    writeFileSync(join(packageRoot, "package.json"), JSON.stringify({ pi: { agents: ["./agents"] } }));
+    writeFileSync(join(packageRoot, "agents", "hidden.md"), "Hidden");
+
+    expect(loadCustomAgents(tmpDir).has("hidden")).toBe(false);
+  });
+
+  it("lets global and project agents override package agents", () => {
+    const packageRoot = join(tmpDir, ".pi", "agent-package");
+    mkdirSync(join(packageRoot, "agents"), { recursive: true });
+    writeFileSync(join(packageRoot, "package.json"), JSON.stringify({ pi: { agents: ["./agents"] } }));
+    writeFileSync(join(packageRoot, "agents", "same.md"), "---\ndescription: Package\n---");
+    writeFileSync(join(tmpDir, ".pi", "settings.json"), JSON.stringify({ packages: ["./agent-package"] }));
+    const globalAgentsDir = join(process.env.PI_CODING_AGENT_DIR!, "agents");
+    mkdirSync(globalAgentsDir, { recursive: true });
+    writeFileSync(join(globalAgentsDir, "same.md"), "---\ndescription: Global\n---");
+
+    expect(loadCustomAgents(join(tmpDir, "project")).get("same")?.description).toBe("Global");
+    const projectDir = join(tmpDir, "project");
+    mkdirSync(join(projectDir, ".pi", "agents"), { recursive: true });
+    writeFileSync(join(projectDir, ".pi", "agents", "same.md"), "---\ndescription: Project\n---");
+    expect(loadCustomAgents(projectDir).get("same")?.description).toBe("Project");
+  });
+
+  it("skips a malformed configured package and loads the next package", () => {
+    const badRoot = join(tmpDir, ".pi", "bad-package");
+    const goodRoot = join(tmpDir, ".pi", "good-package");
+    mkdirSync(badRoot, { recursive: true });
+    mkdirSync(join(goodRoot, "agents"), { recursive: true });
+    writeFileSync(join(badRoot, "package.json"), "{");
+    writeFileSync(join(goodRoot, "package.json"), JSON.stringify({ pi: { agents: ["./agents"] } }));
+    writeFileSync(join(goodRoot, "agents", "good.md"), "Good");
+    writeFileSync(join(tmpDir, ".pi", "settings.json"), JSON.stringify({ packages: ["./bad-package", "./good-package"] }));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+    expect(loadCustomAgents(tmpDir).has("good")).toBe(true);
+    expect(warn).toHaveBeenCalledOnce();
+    warn.mockRestore();
   });
 
   it("honors PI_CODING_AGENT_DIR for global custom agent discovery", () => {

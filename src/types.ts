@@ -63,7 +63,7 @@ export interface AgentConfig extends AgentIdentity, AgentPromptConfig {
   /** false = agent is hidden from the registry */
   enabled?: boolean;
   /** Where this agent was loaded from */
-  source?: "default" | "project" | "global";
+  source?: "default" | "project" | "global" | "package";
 }
 
 export interface AgentInvocation {
