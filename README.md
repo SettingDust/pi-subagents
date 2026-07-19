@@ -1,8 +1,10 @@
-> Standalone snapshot sourced from [`gotgenes/pi-packages`](https://github.com/gotgenes/pi-packages/tree/main/packages/pi-subagents); synchronize from `packages/pi-subagents`.
+# @settingdust/pi-subagents
 
-# @gotgenes/pi-subagents
+## 上游差异 / Differences from upstream
 
-[![npm version](https://img.shields.io/npm/v/@gotgenes/pi-subagents?style=flat&logo=npm&logoColor=white)](https://www.npmjs.com/package/@gotgenes/pi-subagents) [![CI](https://img.shields.io/github/actions/workflow/status/gotgenes/pi-packages/ci.yml?style=flat&logo=github&label=CI)](https://github.com/gotgenes/pi-packages/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://opensource.org/licenses/MIT) [![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![pnpm](https://img.shields.io/badge/pnpm-%3E%3D11-F69220?style=flat&logo=pnpm&logoColor=white)](https://pnpm.io/) [![Pi Package](https://img.shields.io/badge/Pi-Package-6366F1?style=flat)](https://pi.mariozechner.at/)
+本仓库是 [`gotgenes/pi-packages/packages/pi-subagents`](https://github.com/gotgenes/pi-packages/tree/main/packages/pi-subagents) 的独立快照；功能代码当前与上游一致。差异仅限于 npm 包名改为 `@settingdust/pi-subagents`、仓库元数据、公开类型验证脚本中的消费包名及本文档中的安装/导入示例。后续同步路径仍为上游的 `packages/pi-subagents`。
+
+[![npm version](https://img.shields.io/npm/v/@settingdust/pi-subagents?style=flat&logo=npm&logoColor=white)](https://www.npmjs.com/package/@settingdust/pi-subagents) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://opensource.org/licenses/MIT) [![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![pnpm](https://img.shields.io/badge/pnpm-%3E%3D11-F69220?style=flat&logo=pnpm&logoColor=white)](https://pnpm.io/) [![Pi Package](https://img.shields.io/badge/Pi-Package-6366F1?style=flat)](https://pi.mariozechner.at/)
 
 A [pi](https://pi.dev) extension that gives pi **a focused, in-process sub-agent core** — autonomous agents that run inside the same pi runtime (no spawned subprocesses), plus a typed API and lifecycle events other extensions build on.
 Spawn specialized agents that run in isolated sessions — each with its own tools, system prompt, model, and thinking level.
@@ -11,7 +13,7 @@ Run them in foreground or background, steer them mid-run, resume completed sessi
 > Originally forked from [`tintinweb/pi-subagents`](https://github.com/tintinweb/pi-subagents) by [@tintinweb](https://github.com/tintinweb), now an independently maintained hard fork.
 > See [Comparison with upstream](./docs/comparison-with-upstream.md) for a feature-by-feature comparison and guidance on which to choose.
 
-<img width="600" alt="pi-subagents screenshot" src="https://github.com/gotgenes/pi-subagents/raw/main/media/screenshot.png" />
+<img width="600" alt="pi-subagents screenshot" src="https://github.com/SettingDust/pi-subagents/raw/main/media/screenshot.png" />
 
 <https://github.com/user-attachments/assets/8685261b-9338-4fea-8dfe-1c590d5df543>
 
@@ -36,7 +38,7 @@ Run them in foreground or background, steer them mid-run, resume completed sessi
 ## Install
 
 ```bash
-pi install npm:@gotgenes/pi-subagents
+pi install npm:@settingdust/pi-subagents
 ```
 
 Or load directly for development:
@@ -357,12 +359,12 @@ When `@gotgenes/pi-permission-system` is not installed, the lifecycle events hav
 
 This package exposes two public subpath exports for companion extensions to import from the published tarball.
 
-### `@gotgenes/pi-subagents` — cross-extension service contract
+### `@settingdust/pi-subagents` — cross-extension service contract
 
 Access the subagent service from another extension at runtime:
 
 ```typescript
-const { getSubagentsService } = await import("@gotgenes/pi-subagents");
+const { getSubagentsService } = await import("@settingdust/pi-subagents");
 const svc = getSubagentsService();
 svc?.spawn("Explore", "Check for stale TODOs");
 ```
@@ -370,12 +372,12 @@ svc?.spawn("Explore", "Check for stale TODOs");
 Declare this package as an optional peer dependency.
 See `src/service/service.ts` for the full `SubagentsService` interface and the `WorkspaceProvider` seam.
 
-### `@gotgenes/pi-subagents/settings` — layered config loader
+### `@settingdust/pi-subagents/settings` — layered config loader
 
 Extensions that store configuration in JSON files can use the shared layered loader, which reads a global file (`<agentDir>/<filename>`) and a project file (`<cwd>/.pi/<filename>`) and merges them — project wins on conflicts, missing files are silent, malformed files warn and fall back:
 
 ```typescript
-import { loadLayeredSettings, type LayeredSettingsSource } from "@gotgenes/pi-subagents/settings";
+import { loadLayeredSettings, type LayeredSettingsSource } from "@settingdust/pi-subagents/settings";
 
 interface MyConfig { enabled?: boolean; limit?: number }
 

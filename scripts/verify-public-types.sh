@@ -70,7 +70,7 @@ import {
   type WorkspaceDisposeResult,
   type WorkspacePrepareContext,
   type WorkspaceProvider,
-} from "@gotgenes/pi-subagents";
+} from "@settingdust/pi-subagents";
 
 // Exercise the value export and all workspace collaborator type exports.
 const provider: WorkspaceProvider = {
@@ -90,7 +90,7 @@ void getSubagentsService;
 TS
 
 cat > "$CONSUMER/probe-settings.ts" <<'TS'
-import { loadLayeredSettings, type LayeredSettingsSource } from "@gotgenes/pi-subagents/settings";
+import { loadLayeredSettings, type LayeredSettingsSource } from "@settingdust/pi-subagents/settings";
 
 interface MyConfig { enabled?: boolean; limit?: number }
 
@@ -145,4 +145,4 @@ JSON
 # starts from the probe files, so the tarball and peers resolve from the consumer's
 # own node_modules via the package's exports "types" condition.
 pnpm --dir "$PKG_DIR" exec tsc -p "$CONSUMER/tsconfig.json"
-echo "OK: external consumer type-checks against the packaged @gotgenes/pi-subagents"
+echo "OK: external consumer type-checks against the packaged @settingdust/pi-subagents"

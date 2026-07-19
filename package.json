@@ -1,5 +1,5 @@
 {
-  "name": "@gotgenes/pi-subagents",
+  "name": "@settingdust/pi-subagents",
   "version": "18.0.3",
   "type": "module",
   "exports": {
@@ -31,12 +31,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gotgenes/pi-packages.git",
-    "directory": "packages/pi-subagents"
+    "url": "git+https://github.com/SettingDust/pi-subagents.git"
   },
-  "homepage": "https://github.com/gotgenes/pi-packages/tree/main/packages/pi-subagents#readme",
+  "homepage": "https://github.com/SettingDust/pi-subagents#readme",
   "bugs": {
-    "url": "https://github.com/gotgenes/pi-packages/issues"
+    "url": "https://github.com/SettingDust/pi-subagents/issues"
   },
   "keywords": [
     "pi-package",
@@ -86,7 +85,7 @@
     "extensions": [
       "./src/index.ts"
     ],
-    "video": "https://github.com/gotgenes/pi-subagents/raw/main/media/demo.mp4",
-    "image": "https://github.com/gotgenes/pi-subagents/raw/main/media/screenshot.png"
+    "video": "https://github.com/SettingDust/pi-subagents/raw/main/media/demo.mp4",
+    "image": "https://github.com/SettingDust/pi-subagents/raw/main/media/screenshot.png"
   }
 }
